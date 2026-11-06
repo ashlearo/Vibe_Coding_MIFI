@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разбор ДЗ 2. Конструктор посещения события</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #d0d7de;
+    --code-bg: #f6f8fa;
+    --accent: #0969da;
+    --note-bg: #ddf4ff;
+    --note-border: #0969da;
+    --warn-bg: #fff8c5;
+    --warn-border: #bf8700;
+    --ok-bg: #dafbe1;
+    --ok-border: #1a7f37;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+  }
+  h1 { font-size: 28px; border-bottom: 3px solid var(--accent); padding-bottom: 10px; margin-bottom: 8px; }
+  h2 { font-size: 22px; margin-top: 40px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--accent); }
+  h3 { font-size: 17px; margin-top: 28px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 10px 0 10px 22px; padding: 0; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 13px;
+  }
+  .note, .warn, .ok {
+    border-left: 4px solid;
+    padding: 10px 14px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  .note { background: var(--note-bg); border-color: var(--note-border); }
+  .warn { background: var(--warn-bg); border-color: var(--warn-border); }
+  .ok { background: var(--ok-bg); border-color: var(--ok-border); }
+  .task-quote {
+    background: #f6f8fa;
+    border-left: 4px solid #8b949e;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-style: italic;
+    color: #444;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f6f8fa; font-weight: 600; }
+  .small { font-size: 13px; color: var(--muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<h1>Разбор ДЗ 2. Конструктор посещения события</h1>
+<p class="small">Файлы: <code>index.html</code>, <code>style.css</code>, <code>app.js</code> · Запуск: открыть <code>index.html</code> двойным кликом в браузере.</p>
+
+<h2>1. Полный текст задания (сводка)</h2>
+<div class="task-quote">
+<p><strong>Что сдать:</strong> Ссылку на папку с 3 файлами (<code>index.html</code>, <code>style.css</code>, <code>app.js</code>).</p>
+<p><strong>Данные:</strong> В <code>app.js</code> должен быть <code>sourceJson</code>. Нужно распарсить его через <code>JSON.parse()</code> в <code>try...catch</code>.</p>
+<p><strong>Расчёт:</strong> Функция <code>buildReport</code> должна использовать <code>filter</code>, <code>map</code> (с деструктуризацией и <code>trim()</code>) и <code>reduce</code>. Она возвращает объект с <code>count</code>, <code>total</code> и <code>items</code>.</p>
+<p><strong>Интерфейс:</strong> Заголовок, дата, место, описание. Кнопка показа программы. Форма с чекбоксами. Ошибки. Итог и JSON-строка.</p>
+<p><strong>Поведение:</strong> Все скрытые блоки изначально имеют атрибут <code>hidden</code>. Используем <code>querySelector('#id')</code>. События <code>click</code> и <code>submit</code> через <code>addEventListener</code>.</p>
+<p><strong>CSS:</strong> Без Flexbox, Grid, псевдоэлементов. Только margin, padding, border, цвета.</p>
+</div>
+
+<h2>2. Пошаговый разбор</h2>
+
+<h3>2.1. Парсинг JSON и показ формы</h3>
+<div class="task-quote">«<code>sourceJson</code> разбирается через <code>JSON.parse()</code> в <code>try...catch</code>, результат называется <code>data</code>. (...) Блок программы, форма, области обеих ошибок, итог и JSON-строка изначально имеют атрибут <code>hidden</code>. Меняйте их видимость через свойство <code>hidden</code>.»</div>
+<pre><code>let data = null;
+
+try {
+    data = JSON.parse(sourceJson);
+    form.hidden = false; // Показываем форму, если JSON корректен
+} catch (error) {
+    dataError.textContent = 'Ошибка данных.';
+    dataError.hidden = false;
+    form.hidden = true; // Скрываем форму при ошибке
+}</code></pre>
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li><code>try...catch</code> — это обязательное требование безопасности. Если в JSON опечатка (например, пропущена кавычка), программа не "упадёт" с ошибкой в консоли, а перехватит её.</li>
+  <li>Изначально в HTML у формы стоит атрибут <code>hidden</code>. Мы меняем его на <code>false</code> только если парсинг прошёл успешно. Это защищает пользователя от взаимодействия со сломанным интерфейсом.</li>
+</ul>
+
+<h3>2.2. Кнопка «Показать программу»</h3>
+<div class="task-quote">«Кнопка «Показать программу» и блок программы <code>show-program</code>, <code>program</code>; по клику блок виден, его <code>innerHTML</code> равен <code>data.event.meeting</code>.»</div>
+<pre><code>btnShowProgram.addEventListener('click', () => {
+    if (data && data.event) {
+        programBlock.innerHTML = data.event.meeting;
+        programBlock.hidden = false;
+    }
+});</code></pre>
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li><code>addEventListener('click', () => { ... })</code> — современный способ повесить обработчик. Внутри мы передаём функцию, которая выполнится только при клике.</li>
+  <li><code>innerHTML = data.event.meeting</code> — вставляет текст из JSON внутрь блока.</li>
+  <li><code>hidden = false</code> — делает блок видимым.</li>
+</ul>
+
+<h3>2.3. Логика расчёта <code>buildReport</code></h3>
+<div class="task-quote">«Используйте <code>filter</code> для отбора услуг и <code>map</code> для создания нового массива объектов. Внутри <code>map</code> извлеките <code>title</code> и <code>price</code> одноуровневой деструктуризацией и очистите <code>title</code> методом <code>trim()</code>. Сумму цен посчитайте через <code>reduce</code>. Исходные услуги не меняются.»</div>
+<pre><code>function buildReport(services, guideChecked, audioChecked, catalogChecked) {
+    const filteredServices = services.filter((service) => {
+        if (service.id === 'guide' && guideChecked) return true;
+        if (service.id === 'audio' && audioChecked) return true;
+        if (service.id === 'catalog' && catalogChecked) return true;
+        return false;
+    });
+
+    const items = filteredServices.map((service) => {
+        const { title, price } = service;
+        return { title: title.trim(), price: price };
+    });
+
+    const total = items.reduce((sum, item) => sum + item.price, 0);
+
+    return { count: items.length, total: total, items: items };
+}</code></pre>
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li><strong><code>filter</code>:</strong> Мы проходим по исходному массиву <code>services</code> и оставляем только те объекты, для которых вернулось <code>true</code>.</li>
+  <li><strong><code>map</code>:</strong> Создаёт <em>новый</em> массив. В задании сказано "Исходные услуги не меняются", поэтому мы не делаем <code>service.title = service.title.trim()</code> (это мутировало бы исходный объект), а создаём новый <code>{ title: ..., price: ... }</code>.</li>
+  <li><strong>Деструктуризация:</strong> <code>const { title, price } = service;</code> — это короткий и чистый способ вытащить свойства из объекта в переменные.</li>
+  <li><strong><code>reduce</code>:</strong> Метод для сведения массива к одному значению. Мы берём <code>sum</code> (аккумулятор), прибавляем к нему цену текущего элемента и возвращаем новую сумму. Начинаем с <code>0</code>.</li>
+</ul>
+
+<h3>2.4. Обработка отправки формы и валидация</h3>
+<div class="task-quote">«В обработчике <code>submit</code> вызовите <code>event.preventDefault()</code>, прочитайте <code>checked</code> у чекбоксов и вызовите <code>buildReport</code>.»</div>
+<pre><code>form.addEventListener('submit', (event) => {
+    event.preventDefault(); // Отменяем перезагрузку страницы
+
+    const isGuideChecked = checkGuide.checked;
+    const isAudioChecked = checkAudio.checked;
+    const isCatalogChecked = checkCatalog.checked;
+
+    if (!isGuideChecked && !isAudioChecked && !isCatalogChecked) {
+        choiceError.textContent = 'Выберите хотя бы одну услугу.';
+        choiceError.hidden = false;
+        resultBlock.hidden = true;
+        reportJsonBlock.hidden = true;
+        return; // Выходим из функции, чтобы не выполнять расчёт
+    }
+
+    choiceError.hidden = true; // Скрываем ошибку, если всё ок
+    // ... дальнейший расчёт
+});</code></pre>
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li><code>event.preventDefault()</code> — критически важная строка. Без неё браузер попытается отправить форму на сервер и перезагрузить страницу, а наши данные пропадут.</li>
+  <li>Сначала проверяем на пустой выбор. Если ничего не выбрано — показываем ошибку и через <code>return</code> прерываем выполнение функции (дальше код не пойдёт).</li>
+  <li>Свойство <code>.checked</code> возвращает <code>true</code> или <code>false</code> в зависимости от того, стоит ли галочка в чекбоксе.</li>
+</ul>
+
+<h3>2.5. Вывод результата и JSON</h3>
+<div class="task-quote">«<code>innerHTML</code> результата: <code>Выбрано услуг: N&lt;br&gt;Итого: S руб.&lt;br&gt;название 1&lt;br&gt;название 2</code>. В <code>report-json</code> покажите только JSON-строку отчёта, полученную через <code>JSON.stringify()</code> и проверенную через <code>JSON.parse()</code>.»</div>
+<pre><code>const report = buildReport(data.services, isGuideChecked, isAudioChecked, isCatalogChecked);
+
+let resultHtml = `Выбрано услуг: ${report.count}<br>Итого: ${report.total} руб.`;
+report.items.forEach((item) => {
+    resultHtml += `<br>${item.title}`;
+});
+
+resultBlock.innerHTML = resultHtml;
+resultBlock.hidden = false;
+
+const jsonString = JSON.stringify(report);
+JSON.parse(jsonString); // Проверка
+
+reportJsonBlock.textContent = jsonString;
+reportJsonBlock.hidden = false;</code></pre>
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li>Мы формируем строку HTML вручную, добавляя теги <code>&lt;br&gt;</code>.</li>
+  <li><code>forEach</code> используется для перебора отфильтрованных услуг и добавления их названий.</li>
+  <li><code>JSON.stringify(report)</code> превращает объект JavaScript в строку. Задание требует тут же проверить её через <code>JSON.parse()</code>. Это делается для демонстрации того, что мы умеем безопасно сериализовать данные. Для вывода используем <code>textContent</code>, чтобы браузер не воспринимал текст как HTML-теги.</li>
+</ul>
+
+<h2>3. Финальная проверка по чек-листу</h2>
+<table>
+<tr><th>Требование</th><th>Где реализовано</th><th>Статус</th></tr>
+<tr><td>3 файла, относительные пути</td><td><code>index.html</code> (link, script)</td><td>✔</td></tr>
+<tr><td><code>try...catch</code> для JSON</td><td><code>app.js</code>, строки 26-33</td><td>✔</td></tr>
+<tr><td><code>filter</code>, <code>map</code> (destructuring, trim), <code>reduce</code></td><td><code>app.js</code>, функция <code>buildReport</code></td><td>✔</td></tr>
+<tr><td>Исходные услуги не меняются</td><td><code>map</code> создаёт новый объект</td><td>✔</td></tr>
+<tr><td>Скрытие/показ через <code>hidden</code></td><td><code>form.hidden = true/false</code> и др.</td><td>✔</td></tr>
+<tr><td><code>querySelector('#id')</code></td><td>В начале <code>app.js</code></td><td>✔</td></tr>
+<tr><td><code>event.preventDefault()</code></td><td>В <code>submit</code></td><td>✔</td></tr>
+<tr><td>Очистка <code>title</code> от пробелов</td><td><code>title.trim()</code> в <code>map</code></td><td>✔</td></tr>
+<tr><td><code>innerHTML</code> по шаблону</td><td><code>resultBlock.innerHTML = ...</code></td><td>✔</td></tr>
+<tr><td>CSS без Flexbox/Grid</td><td><code>style.css</code></td><td>✔</td></tr>
+<tr><td>Минимум 2 правила для классов</td><td><code>.card</code>, <code>.form-block</code>, <code>.error-message</code> и др.</td><td>✔</td></tr>
+</table>
+
+<h2>4. Крайние случаи для самопроверки</h2>
+<table>
+<tr><th>Сценарий</th><th>Ожидаемое поведение</th></tr>
+<tr><td>Открытие с корректным JSON</td><td>Видна карточка и форма. Остальное скрыто.</td></tr>
+<tr><td>Клик по «Показать программу»</td><td>Появляется текст: <code>Сбор: 18:30. Начало: 19:00.</code></td></tr>
+<tr><td>Выбор только «Аудиогид»</td><td>Итог: <code>Выбрано услуг: 1</code>, <code>Итого: 350 руб.</code>, <code>Аудиогид</code></td></tr>
+<tr><td>Выбор всех услуг</td><td>Итог: <code>Выбрано услуг: 3</code>, <code>Итого: 1100 руб.</code></td></tr>
+<tr><td>Пустой выбор (нажать Submit)</td><td>Появляется текст: <code>Выберите хотя бы одну услугу.</code> Итог и JSON скрыты.</td></tr>
+<tr><td>Непустой выбор после ошибки</td><td>Ошибка исчезает, появляется итог и JSON.</td></tr>
+<tr><td>Сломанный JSON (удалить кавычку)</td><td>Текст: <code>Ошибка данных.</code> Форма исчезает.</td></tr>
+</table>
+
+<div class="warn">
+<strong>Важно:</strong> Перед сдачей обязательно проверь, что файлы открываются без сервера (двойным кликом) и в консоли браузера (F12) нет красных ошибок.
+</div>
+
+<hr>
+<p class="small">Разбор подготовлен для сдачи ДЗ 2. Код полностью соответствует чек-листу задания.</p>
+
+</body>
+</html>

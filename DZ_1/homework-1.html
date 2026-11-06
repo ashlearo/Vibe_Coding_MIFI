@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разбор ДЗ 1. Консольное меню (homework-1.js)</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #d0d7de;
+    --code-bg: #f6f8fa;
+    --accent: #0969da;
+    --note-bg: #ddf4ff;
+    --note-border: #0969da;
+    --warn-bg: #fff8c5;
+    --warn-border: #bf8700;
+    --ok-bg: #dafbe1;
+    --ok-border: #1a7f37;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+  }
+  h1 { font-size: 28px; border-bottom: 3px solid var(--accent); padding-bottom: 10px; margin-bottom: 8px; }
+  h2 { font-size: 22px; margin-top: 40px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--accent); }
+  h3 { font-size: 17px; margin-top: 28px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 10px 0 10px 22px; padding: 0; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 13px;
+  }
+  .note, .warn, .ok {
+    border-left: 4px solid;
+    padding: 10px 14px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  .note { background: var(--note-bg); border-color: var(--note-border); }
+  .warn { background: var(--warn-bg); border-color: var(--warn-border); }
+  .ok { background: var(--ok-bg); border-color: var(--ok-border); }
+  .task-quote {
+    background: #f6f8fa;
+    border-left: 4px solid #8b949e;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-style: italic;
+    color: #444;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f6f8fa; font-weight: 600; }
+  .toc {
+    background: #f6f8fa;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin: 20px 0;
+  }
+  .toc ol { margin: 6px 0 0 20px; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .small { font-size: 13px; color: var(--muted); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<h1>Разбор ДЗ 1. Консольное меню</h1>
+<p class="small">Файл: <code>homework-1.js</code> · Запуск: <code>node homework-1.js</code> · Разбор построен параллельно с текстом задания: сначала цитата требования, затем реализация и объяснение.</p>
+
+<div class="toc">
+<strong>Содержание</strong>
+<ol>
+  <li><a href="#task">Полный текст задания (сводка)</a></li>
+  <li><a href="#code">Полный код решения</a></li>
+  <li><a href="#menu">1. Запуск и главное меню</a></li>
+  <li><a href="#tickets">2. Билетная касса</a></li>
+  <li><a href="#delivery">3. Доставка заказа</a></li>
+  <li><a href="#steps">4. Лестница</a></li>
+  <li><a href="#checklist">5. Финальная проверка по чек-листу</a></li>
+  <li><a href="#edge">6. Крайние случаи для самопроверки</a></li>
+</ol>
+</div>
+
+<h2 id="task">1. Полный текст задания (сводка)</h2>
+<div class="task-quote">
+<p><strong>Что сдать:</strong> одну ссылку на работу (Яндекс.Диск, GitVerse, GitHub и т.п.). Ссылка должна открываться без запроса доступа.</p>
+<p><strong>Как запускается:</strong> <code>node homework-1.js</code>. Программа печатает меню, читает выбор через <code>readline</code>, запрашивает нужные числа, печатает результат и завершается. Если введён не 1, 2 или 3 — печатает <code>такой задачи нет</code>.</p>
+<p><strong>1. Билетная касса.</strong> Запросить категорию и бюджет. <code>ticketPrice(category)</code> через <code>switch</code>: 1→300, 2→500, 3→900, иначе 0. <code>maxTickets(budget, price)</code> циклом <code>while</code> считает количество билетов без деления и округления. <code>printTicketResult(category, budget)</code> вызывает первые две; для неизвестной категории печатает только <code>неизвестная категория</code>, иначе — чек по шаблону.</p>
+<p><strong>2. Доставка заказа.</strong> Запросить расстояние и сумму заказа. <code>deliveryPrice(distance, total)</code>: заказ ≥ 3000 → 0; иначе ≤ 3 км → 0; 4–10 км → 200; &gt; 10 км → 200 + 25 за каждый км после 10-го. <code>printDelivery</code> печатает одну строку по шаблону.</p>
+<p><strong>3. Лестница.</strong> Запросить высоту. <code>printSteps(height)</code> циклом <code>for</code> печатает ступени от 1 до height. Ступень 4 пропустить через <code>continue</code>. После ступени 10 напечатать <code>Дальше лестница не построена</code> и выйти через <code>break</code>. После цикла — <code>Всего построено: N</code>.</p>
+<p><strong>Перед сдачей:</strong> в файле есть <code>switch</code>, <code>while</code>, <code>for</code>, <code>continue</code>, <code>break</code>. Функции, которые считают, возвращают значение, а не печатают. При неверном пункте меню — <code>такой задачи нет</code>.</p>
+</div>
+
+<h2 id="code">2. Полный код решения</h2>
+<pre><code>const readline = require('readline/promises');
+const { stdin: input, stdout: output } = require('process');
+
+const rl = readline.createInterface({ input, output });
+
+// ==========================================
+// 1. Билетная касса
+// ==========================================
+
+function ticketPrice(category) {
+  switch (category) {
+    case 1: return 300;
+    case 2: return 500;
+    case 3: return 900;
+    default: return 0;
+  }
+}
+
+function maxTickets(budget, price) {
+  if (price === 0) return 0; // защита от бесконечного цикла
+
+  let count = 0;
+  let currentBudget = budget;
+
+  while (currentBudget &gt;= price) {
+    currentBudget -= price;
+    count++;
+  }
+  return count;
+}
+
+function printTicketResult(category, budget) {
+  const price = ticketPrice(category);
+
+  if (price === 0) {
+    console.log('неизвестная категория');
+    return;
+  }
+
+  const count = maxTickets(budget, price);
+  console.log(`Категория ${category}, билет ${price} руб., бюджет ${budget} руб.: можно купить ${count} шт.`);
+}
+
+// ==========================================
+// 2. Доставка заказа
+// ==========================================
+
+function deliveryPrice(distance, total) {
+  if (total &gt;= 3000) return 0;
+  if (distance &lt;= 3) return 0;
+  if (distance &gt;= 4 &amp;&amp; distance &lt;= 10) return 200;
+  if (distance &gt; 10) return 200 + 25 * (distance - 10);
+
+  return 0; // страховка для дробных значений 3–4
+}
+
+function printDelivery(distance, total) {
+  const price = deliveryPrice(distance, total);
+  console.log(`Расстояние ${distance} км, заказ ${total} руб.: доставка ${price} руб.`);
+}
+
+// ==========================================
+// 3. Лестница
+// ==========================================
+
+function printSteps(height) {
+  let builtSteps = 0;
+
+  for (let i = 1; i &lt;= height; i++) {
+    if (i === 4) {
+      continue;
+    }
+
+    if (i &gt; 10) {
+      console.log('Дальше лестница не построена');
+      break;
+    }
+
+    console.log(`Ступень ${i}`);
+    builtSteps++;
+  }
+
+  console.log(`Всего построено: ${builtSteps}`);
+}
+
+// ==========================================
+// Главное меню и запуск
+// ==========================================
+
+async function main() {
+  console.log('Выберите задачу:');
+  console.log('1 — билетная касса');
+  console.log('2 — доставка заказа');
+  console.log('3 — лестница');
+
+  const choiceStr = await rl.question('Ваш выбор: ');
+  const choice = Number(choiceStr);
+
+  if (choice === 1) {
+    const category = Number(await rl.question('Категория билета: '));
+    const budget = Number(await rl.question('Бюджет: '));
+    printTicketResult(category, budget);
+  } else if (choice === 2) {
+    const distance = Number(await rl.question('Расстояние: '));
+    const total = Number(await rl.question('Сумма заказа: '));
+    printDelivery(distance, total);
+  } else if (choice === 3) {
+    const height = Number(await rl.question('Высота лестницы: '));
+    printSteps(height);
+  } else {
+    console.log('такой задачи нет');
+  }
+
+  rl.close();
+}
+
+main().catch(console.error);</code></pre>
+
+<h2 id="menu">3. Запуск и главное меню</h2>
+
+<div class="task-quote">«Программа печатает меню… Прочитайте выбор пользователя через <code>readline</code>. Если введён не 1, 2 или 3, напечатайте <code>такой задачи нет</code> и завершите программу.»</div>
+
+<pre><code>const readline = require('readline/promises');
+const { stdin: input, stdout: output } = require('process');
+
+const rl = readline.createInterface({ input, output });
+
+async function main() {
+  console.log('Выберите задачу:');
+  console.log('1 — билетная касса');
+  console.log('2 — доставка заказа');
+  console.log('3 — лестница');
+
+  const choiceStr = await rl.question('Ваш выбор: ');
+  const choice = Number(choiceStr);
+
+  if (choice === 1) { ... }
+  else if (choice === 2) { ... }
+  else if (choice === 3) { ... }
+  else {
+    console.log('такой задачи нет');
+  }
+
+  rl.close();
+}
+
+main().catch(console.error);</code></pre>
+
+<p><strong>Почему так:</strong></p>
+<ul>
+  <li><code>readline/promises</code> — современный способ ввода: <code>await rl.question(...)</code> возвращает ответ прямо в переменную, без колбэков.</li>
+  <li><code>Number(choiceStr)</code> обязателен: <code>rl.question</code> всегда возвращает <strong>строку</strong>. Без приведения <code>'1' !== 1</code>, и все проверки сломаются.</li>
+  <li><code>rl.close()</code> — без него процесс Node.js не завершится, потому что <code>readline</code> держит поток ввода открытым.</li>
+  <li><code>main().catch(console.error)</code> — аккуратная обработка ошибок (например, <code>Ctrl+C</code>).</li>
+</ul>
+
+<h2 id="tickets">4. Билетная касса</h2>
+
+<div class="task-quote">«Для пункта 1 запросите категорию билета и бюджет в рублях.»</div>
+<pre><code>if (choice === 1) {
+  const category = Number(await rl.question('Категория билета: '));
+  const budget = Number(await rl.question('Бюджет: '));
+  printTicketResult(category, budget);
+}</code></pre>
+<p>Снова <code>Number</code>: дальше бюджет будет сравниваться с ценой и уменьшаться, а строка может дать неожиданный результат при неявном приведении.</p>
+
+<div class="task-quote">«<code>ticketPrice(category)</code> через <code>switch</code> возвращает цену билета: для категории 1 — 300, для 2 — 500, для 3 — 900. Для другой категории возвращает 0.»</div>
+<pre><code>function ticketPrice(category) {
+  switch (category) {
+    case 1: return 300;
+    case 2: return 500;
+    case 3: return 900;
+    default: return 0;
+  }
+}</code></pre>
+<ul>
+  <li><code>switch</code> — требование задания, используем именно его.</li>
+  <li><code>return</code> прямо в <code>case</code> — идиоматично: <code>return</code> завершает функцию, <code>break</code> не нужен.</li>
+  <li><code>default: return 0</code> закрывает требование «для другой категории — 0».</li>
+</ul>
+
+<div class="task-quote">«<code>maxTickets(budget, price)</code> циклом <code>while</code> считает, сколько билетов по цене <code>price</code> можно купить на бюджет <code>budget</code>. Не используйте деление и округление.»</div>
+<pre><code>function maxTickets(budget, price) {
+  if (price === 0) return 0;
+
+  let count = 0;
+  let currentBudget = budget;
+
+  while (currentBudget &gt;= price) {
+    currentBudget -= price;
+    count++;
+  }
+  return count;
+}</code></pre>
+<ul>
+  <li><strong>Никакого деления.</strong> «Покупаем» по одному билету: пока денег хватает — вычитаем цену и увеличиваем счётчик.</li>
+  <li><code>if (price === 0) return 0;</code> — защита от бесконечного цикла (иначе <code>currentBudget &gt;= 0</code> всегда истинно).</li>
+  <li><code>let currentBudget = budget;</code> — работаем с копией, чтобы не менять аргумент (сайд-эффекты).</li>
+</ul>
+
+<div class="task-quote">«<code>printTicketResult(category, budget)</code> вызывает первые две функции. Для неизвестной категории печатает только <code>неизвестная категория</code>. В остальных случаях печатает чек.»</div>
+<pre><code>function printTicketResult(category, budget) {
+  const price = ticketPrice(category);
+
+  if (price === 0) {
+    console.log('неизвестная категория');
+    return;
+  }
+
+  const count = maxTickets(budget, price);
+  console.log(`Категория ${category}, билет ${price} руб., бюджет ${budget} руб.: можно купить ${count} шт.`);
+}</code></pre>
+<p>Сначала <code>ticketPrice</code>. Если 0 — печатаем сообщение и <code>return</code>, дальше не идём. Иначе — <code>maxTickets</code> и чек через шаблонную строку.</p>
+
+<h2 id="delivery">5. Доставка заказа</h2>
+
+<div class="task-quote">«<code>deliveryPrice(distance, total)</code> возвращает стоимость доставки. Если сумма заказа не меньше 3000, доставка бесплатна. Иначе до 3 километров включительно доставка тоже бесплатна; от 4 до 10 километров включительно — 200 рублей; дальше — 200 рублей и ещё 25 рублей за каждый километр после десятого.»</div>
+<pre><code>function deliveryPrice(distance, total) {
+  if (total &gt;= 3000) return 0;
+  if (distance &lt;= 3) return 0;
+  if (distance &gt;= 4 &amp;&amp; distance &lt;= 10) return 200;
+  if (distance &gt; 10) return 200 + 25 * (distance - 10);
+
+  return 0;
+}</code></pre>
+<ul>
+  <li><strong>Порядок проверок важен.</strong> Сначала самая «сильная» причина бесплатной доставки — сумма заказа. Если заказ 3000+, расстояние неважно.</li>
+  <li>Диапазоны расстояния идут по возрастанию: ≤3 → 0; 4–10 → 200; &gt;10 → формула.</li>
+  <li>Формула <code>200 + 25 * (distance - 10)</code>: для 12 км → <code>200 + 25 * 2 = 250</code>, как в примере.</li>
+  <li>Финальный <code>return 0</code> — страховка для дробных значений (3–4 км), которых нет в задании.</li>
+</ul>
+
+<div class="task-quote">«<code>printDelivery(distance, total)</code> вызывает первую функцию и печатает одну строку по шаблону: <code>Расстояние 12 км, заказ 2500 руб.: доставка 250 руб.</code>»</div>
+<pre><code>function printDelivery(distance, total) {
+  const price = deliveryPrice(distance, total);
+  console.log(`Расстояние ${distance} км, заказ ${total} руб.: доставка ${price} руб.`);
+}</code></pre>
+<p>Одна шаблонная строка точно по образцу, без лишних слов.</p>
+
+<h2 id="steps">6. Лестница</h2>
+
+<div class="task-quote">«Создайте функцию <code>printSteps(height)</code>. Она циклом <code>for</code> печатает номера ступеней от 1 до <code>height</code>. Ступень 4 не строят: пропустите её через <code>continue</code>. После ступени 10 строительство останавливается: напечатайте <code>Дальше лестница не построена</code> и выйдите из цикла через <code>break</code>. После цикла напечатайте количество построенных ступеней: <code>Всего построено: N</code>.»</div>
+<pre><code>function printSteps(height) {
+  let builtSteps = 0;
+
+  for (let i = 1; i &lt;= height; i++) {
+    if (i === 4) {
+      continue;
+    }
+
+    if (i &gt; 10) {
+      console.log('Дальше лестница не построена');
+      break;
+    }
+
+    console.log(`Ступень ${i}`);
+    builtSteps++;
+  }
+
+  console.log(`Всего построено: ${builtSteps}`);
+}</code></pre>
+<ul>
+  <li><code>for (let i = 1; i &lt;= height; i++)</code> — ровно от 1 до <code>height</code> включительно.</li>
+  <li><code>if (i === 4) continue;</code> — пропускаем всё ниже в теле цикла: «Ступень 4» не печатается, <code>builtSteps</code> не растёт.</li>
+  <li><code>if (i &gt; 10) { ... break; }</code> — на 11-й итерации (когда 10-я уже напечатана) выходим из цикла. Строка «Ступень 11» не выполнится.</li>
+  <li><code>builtSteps++</code> только после успешной печати. Для <code>height = 12</code>: 1,2,3,5,6,7,8,9,10 → 9 ступеней. Совпадает с примером.</li>
+</ul>
+<div class="warn">
+<strong>Порядок проверок.</strong> В данном случае <code>continue</code> и <code>break</code> не конфликтуют: для <code>i = 4</code> первая проверка истинна (continue), для <code>i = 11</code> первая ложна, вторая истинна (break). Но правило хорошего тона — ставить «исключения» (<code>continue</code>) раньше «границ» (<code>break</code>), чтобы читалось сверху вниз по возрастанию.
+</div>
+
+<h2 id="checklist">7. Финальная проверка по чек-листу задания</h2>
+<table>
+<tr><th>Требование</th><th>Где реализовано</th><th>Статус</th></tr>
+<tr><td>Запуск <code>node homework-1.js</code></td><td>Имя файла, <code>main()</code></td><td>✔</td></tr>
+<tr><td>Меню и <code>readline</code></td><td><code>main()</code>, <code>rl.question</code></td><td>✔</td></tr>
+<tr><td>Неверный пункт → <code>такой задачи нет</code></td><td><code>else { console.log('такой задачи нет'); }</code></td><td>✔</td></tr>
+<tr><td><code>ticketPrice</code> через <code>switch</code></td><td>Функция <code>ticketPrice</code></td><td>✔</td></tr>
+<tr><td><code>maxTickets</code> через <code>while</code>, без деления</td><td>Функция <code>maxTickets</code></td><td>✔</td></tr>
+<tr><td><code>printTicketResult</code> с проверкой категории</td><td>Функция <code>printTicketResult</code></td><td>✔</td></tr>
+<tr><td><code>deliveryPrice</code> с диапазонами</td><td>Функция <code>deliveryPrice</code></td><td>✔</td></tr>
+<tr><td><code>printDelivery</code> по шаблону</td><td>Функция <code>printDelivery</code></td><td>✔</td></tr>
+<tr><td><code>printSteps</code> с <code>for</code>, <code>continue</code>, <code>break</code></td><td>Функция <code>printSteps</code></td><td>✔</td></tr>
+<tr><td>Считающие функции возвращают, а не печатают</td><td><code>ticketPrice</code>, <code>maxTickets</code>, <code>deliveryPrice</code> — <code>return</code></td><td>✔</td></tr>
+<tr><td>Печать только в <code>print...</code></td><td><code>printTicketResult</code>, <code>printDelivery</code>, <code>printSteps</code></td><td>✔</td></tr>
+</table>
+
+<h2 id="edge">8. Крайние случаи для самопроверки</h2>
+<p>Перед сдачей запусти программу и проверь сценарии, которых нет в примерах:</p>
+<table>
+<tr><th>Сценарий</th><th>Ожидаемое поведение</th></tr>
+<tr><td>Меню: ввести <code>0</code>, <code>4</code>, <code>-1</code>, <code>abc</code></td><td><code>такой задачи нет</code>, программа завершается</td></tr>
+<tr><td>Билеты: категория <code>4</code> (или любая не 1–3)</td><td><code>неизвестная категория</code>, без чека</td></tr>
+<tr><td>Билеты: бюджет <code>0</code> или отрицательный</td><td><code>можно купить 0 шт.</code></td></tr>
+<tr><td>Билеты: бюджет <code>2300</code>, категория <code>2</code></td><td><code>можно купить 4 шт.</code> (пример из задания)</td></tr>
+<tr><td>Доставка: заказ <code>3000</code>, расстояние любое</td><td>доставка <code>0 руб.</code></td></tr>
+<tr><td>Доставка: заказ <code>2999</code>, расстояние <code>3</code></td><td>доставка <code>0 руб.</code> (до 3 км включительно)</td></tr>
+<tr><td>Доставка: заказ <code>2999</code>, расстояние <code>4</code></td><td>доставка <code>200 руб.</code></td></tr>
+<tr><td>Доставка: заказ <code>2500</code>, расстояние <code>12</code></td><td>доставка <code>250 руб.</code> (пример из задания)</td></tr>
+<tr><td>Лестница: высота <code>1</code></td><td><code>Ступень 1</code> · <code>Всего построено: 1</code></td></tr>
+<tr><td>Лестница: высота <code>3</code></td><td>ступени 1–3 · <code>Всего построено: 3</code> (без 4-ки и без 10-ки)</td></tr>
+<tr><td>Лестница: высота <code>10</code></td><td>1,2,3,5,6,7,8,9,10 · <code>Всего построено: 9</code> (без <code>break</code>)</td></tr>
+<tr><td>Лестница: высота <code>12</code></td><td>1,2,3,5,6,7,8,9,10 · <code>Дальше лестница не построена</code> · <code>Всего построено: 9</code> (пример из задания)</td></tr>
+<tr><td>Лестница: высота <code>0</code> или отрицательная</td><td>цикл не выполнится · <code>Всего построено: 0</code></td></tr>
+</table>
+
+<div class="ok">
+<strong>Проверка завершения процесса.</strong> После вывода результата программа должна завершиться сама. Если висит — забыт <code>rl.close()</code>.
+</div>
+
+<hr>
+<p class="small">Разбор подготовлен к сдаче ДЗ 1. Код полностью соответствует чек-листу задания: есть <code>switch</code>, <code>while</code>, <code>for</code>, <code>continue</code>, <code>break</code>; считающие функции возвращают значение; неверный пункт меню даёт <code>такой задачи нет</code>.</p>
+
+</body>
+</html>
