@@ -39,6 +39,7 @@ yarn-error.log*
 .env.local
 id_ed25519*
 *.pem
+.gitignore
 
 # ===== Исключения: эти файлы НЕ пушим =====
 /промпт.md
