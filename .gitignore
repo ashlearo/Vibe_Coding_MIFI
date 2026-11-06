@@ -13,8 +13,8 @@
 !*.md
 !*.sh
 
-# Разрешаем сами файлы .gitignore
-!.gitignore
+#  сами файлы .gitignore
+.gitignore
 
 # ===== Чёткие запреты (приоритет: идут после whitelist) =====
 
@@ -39,7 +39,7 @@ yarn-error.log*
 .env.local
 id_ed25519*
 *.pem
-.gitignore
+
 
 # ===== Исключения: эти файлы НЕ пушим =====
 /промпт.md
